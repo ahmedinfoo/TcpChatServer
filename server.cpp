@@ -4,12 +4,7 @@ Server::Server(QObject *parent)
     : QTcpServer{parent}
 {
 
-        connect(this, &QTcpServer::newConnection, this, &Server::newConnection);
 
-        if (!listen(QHostAddress::Any, 1234)) {
-            qWarning() << "Unable to start the server: " << errorString();
-            return;
-        }
 
         qInfo() << "Server started on port " << serverPort();
 }
@@ -30,6 +25,7 @@ void Server::close()
 
 void Server::readyread()
 {
+
     QTcpSocket *clientSocket = qobject_cast<QTcpSocket*>(sender());
         if (!clientSocket) {
             return;
@@ -38,7 +34,7 @@ void Server::readyread()
         QByteArray data = clientSocket->readAll();
         qInfo() << "Received data from " << clientSocket->peerAddress().toString() << ": " << data;
 
-        for (QTcpSocket *socket : m_clientSockets) {
+        foreach (QTcpSocket *socket , m_clientSockets) {
             socket->write(data);
         }
 }
@@ -59,8 +55,10 @@ void Server::disconnect()
 
 void Server::incomingConnection(qintptr handle)
 {
-    QTcpSocket *clientSocket = nextPendingConnection();
+    qInfo() << "incomming connection in server  " ;
+    QTcpSocket *clientSocket = new QTcpSocket();
     clientSocket->setSocketDescriptor(handle);
+    qInfo() << "incomming connection in server 2  "<<clientSocket->canReadLine() ;
     if(!clientSocket->waitForConnected(3000))
     {
       delete clientSocket;

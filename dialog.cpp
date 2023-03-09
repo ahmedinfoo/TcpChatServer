@@ -23,11 +23,11 @@ void Dialog::on_startButton_clicked()
     server.setMessage(ui->textMessage->text() + "\r\n");
     if(!server.listen(QHostAddress::Any, port))
     {
-        QMessageBox::critical(this,"Error",server.errorString());
+        QMessageBox::critical(this,"Error",QString("%1").arg(server.serverPort()));
         return;
     }
 
-    ui->lblStatus->setText("Listening...");
+    ui->lblStatus->setText(QString("Listening on port %1...").arg(port));
     enebleButtons();
 }
 
@@ -74,7 +74,7 @@ void Dialog::init()
 
 void Dialog::enebleButtons()
 {
-    ui->startButton->setEnabled(server.isListening());
+    ui->startButton->setEnabled(!server.isListening());
     ui->stoptButton->setEnabled(server.isListening());
     //only one page
     if(ui->stackedWidget->count()<=1){
